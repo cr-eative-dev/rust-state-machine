@@ -1,26 +1,37 @@
 use std::collections::BTreeMap;
 
+type AccountID = String;
+type Balance = u128;
+
+/*
+	TODO: Define the common types used in this pallet:
+		- `AccountID`
+		- `Balance`
+
+	Then update this pallet to use these common types.
+*/
+
 /* TODO: Add the derive macro to implement the `Debug` trait for `Pallet`. */
 #[derive(Debug)]
 pub struct Pallet {
-	balances: BTreeMap<String, u128>,
+	balances: BTreeMap<AccountID, Balance>,
 }
 
 impl Pallet {
 	pub fn new() -> Self {
 		Self { balances: BTreeMap::new() }
 	}
-	pub fn set_balance(&mut self, who: &String, amount: u128) {
+	pub fn set_balance(&mut self, who: &AccountID, amount: Balance) {
 		self.balances.insert(who.clone(), amount);
 	}
-	pub fn balance(&self, who: &String) -> u128 {
+	pub fn balance(&self, who: &AccountID) -> Balance {
 		*self.balances.get(who).unwrap_or(&0)
 	}
 	pub fn transfer(
 		&mut self,
-		caller: String,
-		to: String,
-		amount: u128,
+		caller: AccountID,
+		to: AccountID,
+		amount: Balance,
 	) -> Result<(), &'static str> {
 		let caller_balance = self.balance(&caller);
 		let to_balance = self.balance(&to);

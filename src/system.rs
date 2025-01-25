@@ -2,6 +2,9 @@
 use std::collections::BTreeMap;
 /// This is the System Pallet.
 /// It handles low level state needed for your blockchain.
+type AccountID = String;
+type BlockNumber = u32;
+type Nonce = u32;
 
 #[derive(Debug)]
 pub struct Pallet {
@@ -9,8 +12,8 @@ pub struct Pallet {
 	/* TODO: Create a field `block_number` that stores a `u32`. */
 	/// A map from an account to their nonce.
 	/* TODO: Create a field `nonce` that is a `BTreeMap` from `String` to `u32`. */
-	pub block_number: u32,
-	pub nonce: BTreeMap<String, u32>,
+	pub block_number: BlockNumber,
+	pub nonce: BTreeMap<AccountID, Nonce>,
 }
 
 #[derive(Debug)]
@@ -27,7 +30,7 @@ impl Pallet {
 	}
 
 	/// Get the current block number.
-	pub fn block_number(&self) -> u32 {
+	pub fn block_number(&self) -> BlockNumber {
 		/* TODO: Return the current block number. */
 		self.block_number
 	}
@@ -43,7 +46,7 @@ impl Pallet {
 
 	/// Increment the nonce of an account.
 	/// Returns an error if the nonce would overflow.
-	pub fn inc_nonce(&mut self, who: &String) -> Result<(), SystemError> {
+	pub fn inc_nonce(&mut self, who: &AccountID) -> Result<(), SystemError> {
 		/* TODO: Get the current nonce of `who`, and increment it by one. */
 		let nonce = self.nonce.get(who).copied().unwrap_or(0);
 		let new_nonce = nonce.checked_add(1).ok_or(SystemError::NonceOverflow)?;
