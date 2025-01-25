@@ -1,6 +1,7 @@
 mod balances;
 mod system;
 
+#[derive(Debug)]
 pub struct Runtime {
 	system: system::Pallet,
 	balances: balances::Pallet,
@@ -31,4 +32,6 @@ fn main() {
 
 	runtime.system.inc_nonce(&alice).unwrap();
 	let _res = runtime.balances.transfer(alice, charlie, 20).map_err(|e| eprintln!("{}", e));
+
+	println!("{:?}", runtime);
 }

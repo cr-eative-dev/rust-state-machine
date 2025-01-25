@@ -1,5 +1,7 @@
 use std::collections::BTreeMap;
 
+/* TODO: Add the derive macro to implement the `Debug` trait for `Pallet`. */
+#[derive(Debug)]
 pub struct Pallet {
 	balances: BTreeMap<String, u128>,
 }
