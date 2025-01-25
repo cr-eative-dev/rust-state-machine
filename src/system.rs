@@ -43,9 +43,30 @@ impl Pallet {
 	/// Returns an error if the nonce would overflow.
 	pub fn inc_nonce(&mut self, who: &String) -> Result<(), SystemError> {
 		/* TODO: Get the current nonce of `who`, and increment it by one. */
-		let current_nonce = self.nonce.get(who).copied().unwrap_or(0);
-		let new_nonce = current_nonce.checked_add(1).ok_or(SystemError::NonceOverflow)?;
+		let nonce = self.nonce.get(who).copied().unwrap_or(0);
+		let new_nonce = nonce.checked_add(1).ok_or(SystemError::NonceOverflow)?;
 		self.nonce.insert(who.clone(), new_nonce);
 		Ok(())
+	}
+}
+
+#[cfg(test)]
+mod test {
+	#[test]
+	fn init_system() {
+		/* TODO: Create a test which checks the following:
+			- Increment the current block number.
+			- Increment the nonce of `alice`.
+
+			- Check the block number is what we expect.
+			- Check the nonce of `alice` is what we expect.
+			- Check the nonce of `bob` is what we expect.
+		*/
+		let mut system = super::Pallet::new();
+		system.inc_block_number().unwrap();
+		system.inc_nonce(&"alice".to_string()).unwrap();
+		assert_eq!(system.block_number(), 1);
+		assert_eq!(system.nonce.get(&"alice".to_string()).copied().unwrap_or(0), 1);
+		assert_eq!(system.nonce.get(&"bob".to_string()).copied().unwrap_or(0), 0);
 	}
 }
