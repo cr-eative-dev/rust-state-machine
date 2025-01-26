@@ -1,13 +1,12 @@
-/* TODO: You might need to update your imports. */
+use core::ops::AddAssign;
+use num::traits::{One, Zero, CheckedAdd};
 use std::collections::BTreeMap;
+
 /// This is the System Pallet.
 /// It handles low level state needed for your blockchain.
-type AccountID = String;
-type BlockNumber = u32;
-type Nonce = u32;
 
 #[derive(Debug)]
-pub struct Pallet {
+pub struct Pallet<AccountID, BlockNumber, Nonce> {
 	/// The current block number.
 	/* TODO: Create a field `block_number` that stores a `u32`. */
 	/// A map from an account to their nonce.
@@ -22,11 +21,16 @@ pub enum SystemError {
 	BlockNumberOverflow,
 }
 
-impl Pallet {
+impl<AccountID, BlockNumber, Nonce> Pallet<AccountID, BlockNumber, Nonce>
+where
+	AccountID: Ord + Clone,
+	BlockNumber: Zero + One + AddAssign + Copy + CheckedAdd,
+	Nonce: Zero + One + Copy + CheckedAdd,
+{
 	/// Create a new instance of the System Pallet.
 	pub fn new() -> Self {
 		/* TODO: Return a new instance of the `Pallet` struct. */
-		Pallet { block_number: 0, nonce: BTreeMap::new() }
+		Pallet { block_number: BlockNumber::zero(), nonce: BTreeMap::new() }
 	}
 
 	/// Get the current block number.
@@ -39,8 +43,8 @@ impl Pallet {
 	/// Returns an error if the block number would overflow.
 	pub fn inc_block_number(&mut self) -> Result<(), SystemError> {
 		/* TODO: Increment the current block number by one. */
-		self.block_number =
-			self.block_number.checked_add(1).ok_or(SystemError::BlockNumberOverflow)?;
+		self.block_number = self.block_number.checked_add(&BlockNumber::one())
+			.ok_or(SystemError::BlockNumberOverflow)?;
 		Ok(())
 	}
 
@@ -48,8 +52,9 @@ impl Pallet {
 	/// Returns an error if the nonce would overflow.
 	pub fn inc_nonce(&mut self, who: &AccountID) -> Result<(), SystemError> {
 		/* TODO: Get the current nonce of `who`, and increment it by one. */
-		let nonce = self.nonce.get(who).copied().unwrap_or(0);
-		let new_nonce = nonce.checked_add(1).ok_or(SystemError::NonceOverflow)?;
+		let nonce = *self.nonce.get(who).unwrap_or(&Nonce::zero());
+		let new_nonce = nonce.checked_add(&Nonce::one())
+			.ok_or(SystemError::NonceOverflow)?;
 		self.nonce.insert(who.clone(), new_nonce);
 		Ok(())
 	}
@@ -59,15 +64,7 @@ impl Pallet {
 mod test {
 	#[test]
 	fn init_system() {
-		/* TODO: Create a test which checks the following:
-			- Increment the current block number.
-			- Increment the nonce of `alice`.
-
-			- Check the block number is what we expect.
-			- Check the nonce of `alice` is what we expect.
-			- Check the nonce of `bob` is what we expect.
-		*/
-		let mut system = super::Pallet::new();
+		let mut system = super::Pallet::<String, u32, u32>::new();
 		system.inc_block_number().unwrap();
 		system.inc_nonce(&"alice".to_string()).unwrap();
 		assert_eq!(system.block_number(), 1);
