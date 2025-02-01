@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 
 #[derive(Debug)]
 pub struct Pallet<AccountID, Balance> {
-	balances: BTreeMap<AccountID, Balance>,
+	balances: BTreeMap<AccountID, Balance>, // generic traits
 }
 
 impl<AccountID, Balance> Pallet<AccountID, Balance>
